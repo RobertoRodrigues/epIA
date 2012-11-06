@@ -6,7 +6,9 @@ import org.junit.Test
 class testeEP {
 
   @Test
-  def test() {
+  def primeiroTeste() {
+    assertEquals("", "")
   }
 
 }
+

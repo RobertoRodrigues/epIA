@@ -1,0 +1,7 @@
+Sim, Não | classes (Jogou ou não jogou?)
+
+Dia: discreto 14(1, 14)
+Tempo: discreto 3(Sol, Chuva, Nublado)
+Temperatura: discreto 3(Quente, Mediana, Frio)
+Umidade: discreto 2(Alta, Normal)
+Vento: discreto 2(Forte, Fraco)

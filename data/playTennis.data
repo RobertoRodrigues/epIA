@@ -1,0 +1,14 @@
+1, Sol, Quente, Alta, Fraco, Não
+2, Sol, Quente, Alta, Forte, Não
+3, Nublado, Quente, Alta, Fraco, Sim
+4, Chuva, Mediana, Alta, Fraco, Sim
+5, Chuva, Frio, Normal, Fraco, Sim
+6, Chuva, Frio, Normal, Forte, Sim
+7, Nublado, Frio, Normal, Forte, Sim
+8, Sol, Mediana, Alta, Fraco, Não
+9, Sol, Frio, Normal, Fraco, Sim
+10, Chuva, Mediana, Normal, Fraco, Sim
+11, Sol, Mediana, Normal, Forte, Sim
+12, Nublado, Mediana, Alta, Forte, Sim
+13, Nublado, Quente, Normal, Fraco, Sim
+14, Chuva, mediana, Alta, Forte, Não
