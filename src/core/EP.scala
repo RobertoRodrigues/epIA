@@ -31,21 +31,22 @@ class Dados(pathNames: String, pathData: String) {
   }
   fileData.close();
 
-  var tamanhoDaBase = strData.size
-  var frequenciaClasse = new Array[Double](qtClasses)
-  var frequenciaAtributo = new Array[Double](qtAtributos)
-  var probabilidadeDeUmaClasseOcorra = new Array[Double](qtClasses)
-  var probabilidadeDeUmAtributoOcorra = new Array[Double](qtAtributos)
-  var probabilidadeDeUmAtributoDadoUmaClasse = new Array[Array[Double]](qtAtributos).map(a => new Array[Double](qtClasses))
-  var probabilidadeDeUmClasseDadoUmAtributo = new Array[Array[Double]](qtClasses).map(a => new Array[Double](qtAtributos))
-  var qtClasses: Int = 2
-  var qtAtributos: Int = strNames.size - 1
+  val tamanhoDaBase = strData.size
+  val frequenciaClasse = new Array[Int](qtClasses)
+  val frequenciaAtributo = new Array[Array[Int]](qtAtributos).map(a => new Array[Int](qtMaxVal)) //gostaria de colocar os valores dos atributos e suas frequencias
+  val probabilidadeDeUmaClasseOcorra = new Array[Double](qtClasses)
+  val probabilidadeDeUmAtributoDadoUmaClasse = new Array[Array[Double]](qtAtributos).map(a => new Array[Double](qtClasses))
+  val qtClasses: Int = 2
+  val qtAtributos: Int = strNames.size - 1
+  val qtMaxVal = setQtMaxVal // preferia ter um por valor
   setFrequenciaClasse
   setFrequenciaAtributo
   setProbabilidadeDeUmaClasseOcorra
-  setProbabilidadeDeUmAtributoOcorra
   setProbabilidadeDeUmAtributoDadoUmaClasse
-  setProbabilidadeDeUmClasseDadoUmAtributo
+
+  def setQtMaxVal() = {
+    0
+  }
 
   def setFrequenciaClasse() = {
 
@@ -56,13 +57,7 @@ class Dados(pathNames: String, pathData: String) {
   def setProbabilidadeDeUmaClasseOcorra() = {
 
   }
-  def setProbabilidadeDeUmAtributoOcorra() = {
-
-  }
   def setProbabilidadeDeUmAtributoDadoUmaClasse() = {
-
-  }
-  def setProbabilidadeDeUmClasseDadoUmAtributo() = {
 
   }
 }
