@@ -4,6 +4,8 @@ import java.util.Scanner
 import java.io.BufferedReader
 import java.io.FileReader
 import scala.collection.mutable.ArrayBuffer
+import scala.io.Source
+import java.io.File
 
 class EP {
 
@@ -60,33 +62,19 @@ class Valores {
 class Dados(pathNames: String, pathData: String, pTreinamento: Double) {
   //separar os dados em dois grupos de treinamento e teste sendo a divisão aleatória
 
-  var str = ""
-  val fileNames: BufferedReader = new BufferedReader(new FileReader(pathNames))
-  var strNames = new ArrayBuffer
-  while (fileNames.ready()) {
-    str = fileNames.readLine()
-    if (str.head != '|' && str.head != ' ') {
-      strNames + str
-    }
-  }
-  fileNames.close();
+  val names = Source.fromFile(new File(pathNames)).getLines.filter(str => str.head != '|' && str.head != ' ')
 
-  val fileData: BufferedReader = new BufferedReader(new FileReader(pathData))
-  var strData = new ArrayBuffer
-  while (fileNames.ready()) {
-    strData + fileNames.readLine()
-  }
-  fileData.close();
+  val data = Source.fromFile(new File(pathData)).getLines.map(_.split(",").map(_.toDouble))
 
-  val dadosDeTeste = new Array[Array[Valores]](qtAtributos + 1).map(a => new Array[Valores](tamanhoDaBaseDeTeste))
-  val tamanhoDaBaseDeTeste: Int = strData.size - tamanhoDaBase
-  val tamanhoDaBase = (strData.size * pTreinamento).toInt
+  //val dadosDeTeste = new Array[Array[Valores]](qtAtributos + 1).map(a => new Array[Valores](tamanhoDaBaseDeTeste))
+  val tamanhoDaBaseDeTeste = data.size - tamanhoDaBase
+  val tamanhoDaBase = data.size * pTreinamento
   val frequenciaClasse = new Array[Int](qtClasses)
-  val frequenciaAtributo = new Array[Array[Valores]](qtAtributos).map(a => new Array[Int](qtMaxVal)) //gostaria de colocar os valores dos atributos e suas frequencias
+  //val frequenciaAtributo = new Array[Array[Valores]](qtAtributos).map(a => new Array[Int](qtMaxVal)) //gostaria de colocar os valores dos atributos e suas frequencias
   val probabilidadeDeUmaClasseOcorra = new Array[Double](qtClasses)
-  val probabilidadeDeUmAtributoDadoUmaClasse = new Array[Array[Valores]](qtAtributos).map(a => new Array[Double](qtClasses))
+  //val probabilidadeDeUmAtributoDadoUmaClasse = new Array[Array[Valores]](qtAtributos).map(a => new Array[Double](qtClasses))
   val qtClasses: Int = 2
-  val qtAtributos: Int = strNames.size - 1
+  //val qtAtributos: Int = names.size - 1
   val qtMaxVal = setQtMaxVal // preferia ter um por valor
   setFrequenciaClasse
   setFrequenciaAtributo

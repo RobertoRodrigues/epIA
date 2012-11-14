@@ -1,7 +1,7 @@
 1, 0 | Jogou, não jogou  classes
 
 Dia: discreto 14(1, 14)
-Tempo: discreto 3(Sol, Chuva, Nublado)
-Temperatura: discreto 3(Quente, Mediana, Frio)
-Umidade: discreto 2(Alta, Normal)
-Vento: discreto 2(Forte, Fraco)
+Tempo: discreto 3(Sol = 1, Chuva = 3, Nublado = 2)
+Temperatura: discreto 3(Quente = 1, Mediana = 2, Frio = 3)
+Umidade: discreto 2(Alta = 1, Normal = 2)
+Vento: discreto 2(Forte = 1, Fraco = 2)
