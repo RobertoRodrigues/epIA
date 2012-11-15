@@ -11,13 +11,18 @@ class LeituraDeArquivo {
 
 	int qtAtributo = 0;
 	int qtExemplo = 0;
+	ArrayList<Exemplo> exemplos;
 	double[][] valoresDeAtributo;// na última linha temos a classe
-	Double[][] matrizDeExemplos;
 	String[] classe = new String[2];
 	ArrayList<String> atributos;
 
 	LeituraDeArquivo(final String pathData, final String pathNames) throws NumberFormatException, IOException {
-		BufferedReader names = new BufferedReader(new FileReader(pathNames));
+		setAtributos(new BufferedReader(new FileReader(pathNames)));
+		setDados(new BufferedReader(new FileReader(pathData)));
+		setValoresAtributo();
+	}
+
+	private void setAtributos(final BufferedReader names) throws IOException {
 		atributos = new ArrayList<String>();
 		String line;
 		while ((line = names.readLine()) != null) {
@@ -34,36 +39,45 @@ class LeituraDeArquivo {
 			}
 		}
 		qtAtributo = atributos.size();
-		BufferedReader data = new BufferedReader(new FileReader(pathData));
+	}
+
+	private void setDados(final BufferedReader data) throws IOException {
+		String line;
 		ArrayList<String> lista = new ArrayList<String>();
 		while ((line = data.readLine()) != null) {
 			lista.add(line);
 		}
 		qtExemplo = lista.size();
-		matrizDeExemplos = new Double[qtExemplo][];
+		exemplos = new ArrayList<Exemplo>();
 		for (int i = 0; i < qtExemplo; i++) {
 			String[] exemplo = lista.get(i).split(",");
 			qtAtributo = exemplo.length - 1;
-			matrizDeExemplos[i] = new Double[exemplo.length];
-			for (int j = 0; j < exemplo.length; j++) {
-				matrizDeExemplos[i][j] = new Double(exemplo[j]);
+			double[] exemploD = new double[qtAtributo];
+			for (int j = 0; j < exemplo.length - 1; j++) {
+				exemploD[j] = new Double(exemplo[j]);
 			}
+			exemplos.add(new Exemplo(exemploD, new Integer(exemplo[qtAtributo])));
 		}
+	}
+
+	private void setValoresAtributo() {
 		valoresDeAtributo = new double[qtAtributo + 1][]; // +1 para classe
 		for (int i = 0; i < qtAtributo + 1; i++) { // +1 para classe
 			HashSet<Double> setAtributos = new HashSet<Double>();
 			for (int j = 0; j < qtExemplo; j++) {
-				setAtributos.add(matrizDeExemplos[j][i]);
+
+				if (i != qtAtributo) {
+					setAtributos.add(exemplos.get(j).valores[i]);
+				} else {
+					setAtributos.add((double) exemplos.get(j).classe);
+				}
 			}
 			valoresDeAtributo[i] = new double[setAtributos.size()];
 			int ii = 0;
-			System.out.print(i + " | " + setAtributos.size() + " | ");
-			for (Iterator iterator = setAtributos.iterator(); iterator.hasNext();) {
-				valoresDeAtributo[i][ii] = (Double) iterator.next();
-				System.out.print(valoresDeAtributo[i][ii] + ", ");
+			for (Iterator<Double> iterator = setAtributos.iterator(); iterator.hasNext();) {
+				valoresDeAtributo[i][ii] = iterator.next();
 				ii++;
 			}
-			System.out.println();
 		}
 	}
 }

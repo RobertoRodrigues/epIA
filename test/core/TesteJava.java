@@ -1,11 +1,6 @@
 package core;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
-
-import org.junit.Before;
-import org.junit.Test;
 
 public class TesteJava {
 	LeituraDeArquivo pr;
@@ -18,9 +13,9 @@ public class TesteJava {
 
 	@Test
 	public void primeiroTest() {
-		assertEquals(0.64, pr.matrizDeExemplos[0][1], 0.00000000001);
-		assertEquals(1, pr.matrizDeExemplos[0][57], 0.00000000001);
-		assertEquals(0.65, pr.matrizDeExemplos[4600][2], 0.00000000001);
+		assertEquals(0.64, pr.exemplos.get(0).valores[1], 0.00000000001);
+		assertEquals(1, pr.exemplos.get(0).classe, 0.00000000001);
+		assertEquals(0.65, pr.exemplos.get(4600).valores[2], 0.00000000001);
 	}
 
 	@Test
@@ -40,5 +35,7 @@ public class TesteJava {
 		assertEquals(273, pr.valoresDeAtributo[56][0], 0.0000001);
 		assertEquals(143, pr.valoresDeAtributo[56][918], 0.0000001);
 		assertEquals(919, pr.valoresDeAtributo[56].length);
+		assertEquals(1, pr.valoresDeAtributo[57][1], 0.0000001);// classe
+		assertEquals(0, pr.valoresDeAtributo[57][0], 0.0000001);// classe
 	}
 }
