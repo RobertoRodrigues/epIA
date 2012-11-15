@@ -1,10 +1,12 @@
 package core;
 
-public class Grupos {
-	Exemplo[] treinamento;
-	Exemplo[] teste;
+import java.util.List;
 
-	public Grupos(final Exemplo[] treinamento, final Exemplo[] teste) {
+public class Grupos {
+	List<Exemplo> treinamento;
+	List<Exemplo> teste;
+
+	public Grupos(final List<Exemplo> treinamento, final List<Exemplo> teste) {
 		this.treinamento = treinamento;
 		this.teste = teste;
 	}
