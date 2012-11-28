@@ -79,7 +79,23 @@ class NaiveBayes {
 											// valores dado que a classe é 0
 		for (int i = 0; i < exemplo.atributos.length; i++) {
 			for (int j = 0; j < frequenciaDosValores0[i].length; j++) {
-				if (valsAtributo[i][j] == exemplo.atributos[i]) {
+				if (valsAtributo[i][j] == exemplo.atributos[i]) { // acho que
+																	// pode dar
+																	// problema
+																	// pois pode
+																	// ter um
+																	// valor que
+																	// não tem
+																	// na matriz
+																	// e se for
+																	// menor
+																	// deveria
+																	// ser a
+																	// possicão
+																	// zero, se
+																	// for maior
+																	// a última
+																	// possicão
 					if (frequenciaDosValores0[i][j] == 0) {
 						p0 *= (frequenciaDosValores0[i][j] + 1) / (qtClasse0Treinamento + qtValoresPorAtributo[i]);
 					} else {
@@ -89,7 +105,7 @@ class NaiveBayes {
 				}
 			}
 			for (int j = 0; j < frequenciaDosValores1[i].length; j++) {
-				if (valsAtributo[i][j] == exemplo.atributos[i]) {
+				if (valsAtributo[i][j] == exemplo.atributos[i]) {// idem
 					if (frequenciaDosValores1[i][j] == 0) {
 						p0 *= (frequenciaDosValores1[i][j] + 1) / (qtClasse1Treinamento + qtValoresPorAtributo[i]);
 					} else {
