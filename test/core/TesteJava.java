@@ -18,9 +18,9 @@ public class TesteJava {
 
 	@Test
 	public void primeiroTest() {
-		assertEquals(0.64, pr.exemplos.get(0).valores[1], 0.00000000001);
+		assertEquals(0.64, pr.exemplos.get(0).atributos[1], 0.00000000001);
 		assertEquals(1, pr.exemplos.get(0).classe, 0.00000000001);
-		assertEquals(0.65, pr.exemplos.get(4600).valores[2], 0.00000000001);
+		assertEquals(0.65, pr.exemplos.get(4600).atributos[2], 0.00000000001);
 	}
 
 	@Test

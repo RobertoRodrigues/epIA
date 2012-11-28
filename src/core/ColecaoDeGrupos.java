@@ -5,14 +5,18 @@ import java.util.Collections;
 import java.util.List;
 
 class ColecaoDeGrupos {
+	double[][] valoresDeAtributo;// na última linha temos a classe
 	ArrayList<String> atributos;
 	ArrayList<Exemplo> baseRandomizada;
-	ArrayList<Grupos> grupos = new ArrayList<Grupos>();
+	ArrayList<Dados> grupos = new ArrayList<Dados>();
 	int pontoDeDivisao = 0;
 	List<Exemplo> teste = null;
 	List<Exemplo> treinamento = null;
+	String[] classe;
 
 	ColecaoDeGrupos(final double porcentagemTreinamento, final LeituraDeArquivo entrada, final int folds) {
+		classe = entrada.classe;
+		valoresDeAtributo = entrada.valoresDeAtributo;
 		baseRandomizada = entrada.exemplos;
 		atributos = entrada.atributos;
 		pontoDeDivisao = (int) (entrada.qtExemplo * porcentagemTreinamento);
@@ -20,7 +24,8 @@ class ColecaoDeGrupos {
 			Collections.shuffle(baseRandomizada);
 			treinamento = baseRandomizada.subList(0, pontoDeDivisao);
 			teste = baseRandomizada.subList(pontoDeDivisao, entrada.qtExemplo);
-			grupos.add(new Grupos(treinamento, teste));
+			// descretizacao
+			grupos.add(new Dados(treinamento, teste, classe, atributos));
 		}
 	}
 }

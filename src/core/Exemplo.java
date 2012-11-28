@@ -1,11 +1,16 @@
 package core;
 
-class Exemplo {
-	final double[] valores;
+class Exemplo implements Comparable<Exemplo> {
+	final double[] atributos;
 	final int classe;
 
-	Exemplo(final double[] valores, final int classe) {
-		this.valores = valores;
+	Exemplo(final double[] atributos, final int classe) {
+		this.atributos = atributos;
 		this.classe = classe;
+	}
+
+	@Override
+	public int compareTo(final Exemplo e) {
+		return classe - e.classe;
 	}
 }

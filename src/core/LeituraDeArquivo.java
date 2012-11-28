@@ -67,7 +67,7 @@ class LeituraDeArquivo {
 			for (int j = 0; j < qtExemplo; j++) {
 
 				if (i != qtAtributo) {
-					setAtributos.add(exemplos.get(j).valores[i]);
+					setAtributos.add(exemplos.get(j).atributos[i]);
 				} else {
 					setAtributos.add((double) exemplos.get(j).classe);
 				}
