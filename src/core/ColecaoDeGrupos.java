@@ -7,11 +7,11 @@ import java.util.List;
 class ColecaoDeGrupos {
 	double[][] valoresDeAtributo;// na última linha temos a classe
 	ArrayList<String> atributos;
-	ArrayList<Exemplo> baseRandomizada;
+	ArrayList<Exemplo1> baseRandomizada;
 	ArrayList<Dados> grupos = new ArrayList<Dados>();
 	int pontoDeDivisao = 0;
-	List<Exemplo> teste = null;
-	List<Exemplo> treinamento = null;
+	List<Exemplo1> teste = null;
+	List<Exemplo1> treinamento = null;
 	String[] classe;
 
 	ColecaoDeGrupos(final double porcentagemTreinamento, final LeituraDeArquivo entrada, final int folds) {
@@ -25,7 +25,8 @@ class ColecaoDeGrupos {
 			treinamento = baseRandomizada.subList(0, pontoDeDivisao);
 			teste = baseRandomizada.subList(pontoDeDivisao, entrada.qtExemplo);
 			// descretizacao
-			grupos.add(new Dados(treinamento, teste, classe, atributos));
+			// grupos.add(new Dados(treinamento, teste, classe, atributos,
+			// entrada.qtExemplo, pontoDeDivisao));
 		}
 	}
 }

@@ -11,7 +11,7 @@ class LeituraDeArquivo {
 
 	int qtAtributo = 0;
 	int qtExemplo = 0;
-	ArrayList<Exemplo> exemplos;
+	ArrayList<Exemplo1> exemplos;
 	double[][] valoresDeAtributo;// na última linha temos a classe
 	String[] classe = new String[2];
 	ArrayList<String> atributos;
@@ -48,7 +48,7 @@ class LeituraDeArquivo {
 			lista.add(line);
 		}
 		qtExemplo = lista.size();
-		exemplos = new ArrayList<Exemplo>();
+		exemplos = new ArrayList<Exemplo1>();
 		for (int i = 0; i < qtExemplo; i++) {
 			String[] exemplo = lista.get(i).split(",");
 			qtAtributo = exemplo.length - 1;
@@ -56,7 +56,7 @@ class LeituraDeArquivo {
 			for (int j = 0; j < exemplo.length - 1; j++) {
 				exemploD[j] = new Double(exemplo[j]);
 			}
-			exemplos.add(new Exemplo(exemploD, new Integer(exemplo[qtAtributo])));
+			exemplos.add(new Exemplo1(exemploD, new Integer(exemplo[qtAtributo])));
 		}
 	}
 

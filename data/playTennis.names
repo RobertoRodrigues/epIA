@@ -1,4 +1,4 @@
-1, 0 | Jogou, não jogou  classes
+nao jogou,jogou
 
 Dia: discreto 14(1, 14)
 Tempo: discreto 3(Sol = 1, Chuva = 3, Nublado = 2)
