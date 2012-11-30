@@ -9,7 +9,6 @@ import scala.util.Random
 class Exemplo(val atributos: List[String], val classe: Int) {
   override def toString = "Exemplo(%s, %s)".format(atributos.toString, classe.toString)
 }
-
 object Exemplo {
   def apply(string: String): Exemplo = {
     val linha = string.split(",")
@@ -17,7 +16,6 @@ object Exemplo {
     new Exemplo(exemplo._1.toList, exemplo._2(0).toInt)
   }
 }
-
 case class NaiveBayes(c0: List[MMap[String, Double]], c1: List[MMap[String, Double]], fClasse0: Double, fClasse1: Double) {
   def probabilidadeDeOcorrer(exemplo: Exemplo) = {
     val pre1 = pre(c1, fClasse1, exemplo)
@@ -31,7 +29,6 @@ case class NaiveBayes(c0: List[MMap[String, Double]], c1: List[MMap[String, Doub
     }._1 * f
   }
 }
-
 case class Data(exemplos: List[Exemplo], classes: List[String], nomesAtributos: List[String]) {
   import scala.util.Random._
   lazy val frequencias = {
@@ -45,9 +42,7 @@ case class Data(exemplos: List[Exemplo], classes: List[String], nomesAtributos: 
     (Data(t._1, classes, nomesAtributos), t._2)
   }
   def seleciona(c: Cromossomo): Data = {
-    if (!c.genes.foldLeft(false)(_ || _)) seleciona(c.mutacao._1)
-    else
-      Data(exemplos.zip(c.genes).filter(_._2).unzip._1, classes, nomesAtributos.zip(c.genes).filter(_._2).unzip._1)
+    Data(exemplos.zip(c.genes).filter(_._2).unzip._1, classes, nomesAtributos.zip(c.genes).filter(_._2).unzip._1)
   }
   def calculaFrequencia(c0: List[Exemplo]) = {
     val l = ListBuffer[MMap[String, Int]]()
@@ -83,22 +78,31 @@ case class Cromossomo(genes: List[Boolean]) {
   def cruza(c: Cromossomo) = {
     val a = genes.splitAt(genes.size / 2)
     val b = c.genes.splitAt(genes.size / 2)
-    List((Cromossomo(a._1 ++ b._2), None), (Cromossomo(b._1 ++ a._2), None))
+    List((CromossomoNaoFalse(Cromossomo(a._1 ++ b._2)), None), (CromossomoNaoFalse(Cromossomo(b._1 ++ a._2)), None))
   }
   def mutacao = {
-    (Cromossomo(genes.map(b => if (Random.nextDouble < 0.33) !b else b)), None)
+    (CromossomoNaoFalse(Cromossomo(genes.map(b => if (Random.nextDouble < 0.33) !b else b))), None)
   }
 }
 object CromossomoAleatorio {
   def apply(size: Int) = {
-    Cromossomo((1 to size).map(w => Random.nextBoolean).toList)
+    CromossomoNaoFalse(Cromossomo((1 to size).map(w => Random.nextBoolean).toList))
+  }
+}
+object CromossomoNaoFalse {
+  def apply(x: => Cromossomo): Cromossomo = {
+    val a = x
+    if (!a.genes.foldLeft(false)(_ || _)) {
+      System.err.println("1 up!")
+      apply(x)
+    } else a
   }
 }
 object Genetico {
   def apply(datae: Data) = {
     val (data, test) = datae.particiona(2.0 / 3)
     val cromossomos: Seq[(Cromossomo, Option[Data])] = (1 to 15).map(w => (CromossomoAleatorio(data.nomesAtributos.size), None))
-    (1 to 1).map { w =>
+    (1 to 10).map { w =>
       (1 to 40).foldLeft(cromossomos) { (cromossomos, i) =>
         val datas = cromossomos.map(c => data.seleciona(c._1))
         val mA = datas.zip(cromossomos).map { w =>
@@ -120,7 +124,6 @@ object Fold {
   def apply(fold: Int, dataE: Data, pDiv: Double): Double = {
     apply(fold, dataE.particiona(pDiv))
   }
-
   def apply(fold: Int, aux: => (Data, List[Exemplo])): Double = {
     (1 to fold).foldLeft(0.0) { (soma, w) =>
       val (data, exemplos) = aux
@@ -138,24 +141,27 @@ object Fold {
   }
 }
 object Ep extends App {
-  /*
-  val dataTennis = read("/Users/rlmr/Documents/workspace/epIA/data/playtennis.data",
-    "/Users/rlmr/Documents/workspace/epIA/data/playtennis.names")
+  val dataTennis = read("data/playtennis.data", "data/playtennis.names")
+  val dataDiscrSpam = read("data/discretespambase.data", "data/spambase.names")
+  val dataSpam = read("data/spambase.data", "data/spambase.names")
 
-  println(dataTennis.frequencias.probabilidadeDeOcorrer(Exemplo("1,2,1,1,0")))
-  println(dataTennis.frequencias.probabilidadeDeOcorrer(Exemplo("2,2,2,2,1")))
-  println(dataTennis.frequencias.probabilidadeDeOcorrer(Exemplo("1,1,1,1,0")))
-*/
-  val dataSpam = read("/Users/rlmr/Documents/workspace/epIA/data/discretespambase.data",
-    "/Users/rlmr/Documents/workspace/epIA/data/spambase.names")
+  val str = " probabilidade de jogar tenis dado que: "
+  println(dataTennis.frequencias.probabilidadeDeOcorrer(Exemplo("1,2,1,1,0")) + str + "Sol, Quente, Alta, Forte")
+  println(dataTennis.frequencias.probabilidadeDeOcorrer(Exemplo("2,2,2,2,1")) + str + "Nublado, Mediana, Normal, Fraco")
+  println(dataTennis.frequencias.probabilidadeDeOcorrer(Exemplo("1,1,1,1,0")) + str + "Sol, Quente, Alta, Forte")
 
-  //println(Fold(1, dataSpam, 2.0 / 3))
-  // println(Fold(10, dataSpam, 0.9))
+  println(Fold(1, dataSpam, 2.0 / 3) + " de acurácia Base sem discretizar Spam hold out")
+  println(Fold(10, dataSpam, 0.9) + " de acurácia Base sem discretizar Spam 10 fold cross validation")
+  println(Fold(1, dataDiscrSpam, 2.0 / 3) + " de acurácia Base discretizada Spam hold out")
+  println(Fold(10, dataDiscrSpam, 0.9) + " de acurácia Base discretizada Spam 10 fold cross validation")
 
+  println("Genético base discretizada")
+  Genetico(dataDiscrSpam)
+
+  println("Genético sem discretizar")
   Genetico(dataSpam)
 
   def read(pathData: String, pathNames: String) = {
-
     val exemplos = Source.fromFile(new File(pathData)).getLines.map(Exemplo(_)).toList
     val list = Source.fromFile(new File(pathNames)).getLines.filterNot(l => l.startsWith("|") || l.isEmpty).toList
     val classes = list.head.split(",").toList
