@@ -16,19 +16,6 @@ object Exemplo {
     new Exemplo(exemplo._1.toList, exemplo._2(0).toInt)
   }
 }
-case class NaiveBayes(c0: List[MMap[String, Double]], c1: List[MMap[String, Double]], fClasse0: Double, fClasse1: Double) {
-  def probabilidadeDeOcorrer(exemplo: Exemplo) = {
-    val pre1 = pre(c1, fClasse1, exemplo)
-    pre1 / (pre1 + pre(c0, fClasse0, exemplo))
-  }
-  def pre(lista: List[MMap[String, Double]], f: Double, exemplo: Exemplo) = {
-    exemplo.atributos.foldLeft(1.0, 0) { (t, atributo) =>
-      val (mult, i) = t
-      val p = lista(i).get(atributo).getOrElse(lista(i).get("default").get)
-      (p * mult, i + 1)
-    }._1 * f
-  }
-}
 case class Data(exemplos: List[Exemplo], classes: List[String], nomesAtributos: List[String]) {
   import scala.util.Random._
   lazy val frequencias = {
@@ -67,12 +54,45 @@ case class Data(exemplos: List[Exemplo], classes: List[String], nomesAtributos: 
     }.toList
   }
 }
+case class NaiveBayes(c0: List[MMap[String, Double]], c1: List[MMap[String, Double]], fClasse0: Double, fClasse1: Double) {
+  def probabilidadeDeOcorrer(exemplo: Exemplo) = {
+    val pre1 = pre(c1, fClasse1, exemplo)
+    pre1 / (pre1 + pre(c0, fClasse0, exemplo))
+  }
+  def pre(lista: List[MMap[String, Double]], f: Double, exemplo: Exemplo) = {
+    exemplo.atributos.foldLeft(1.0, 0) { (t, atributo) =>
+      val (mult, i) = t
+      val p = lista(i).get(atributo).getOrElse(lista(i).get("default").get)
+      (p * mult, i + 1)
+    }._1 * f
+  }
+}
 case class MatConf(vp: Int, fp: Int, vn: Int, fn: Int) {
   def plusvp = MatConf(vp + 1, fp, vn, fn)
   def plusfp = MatConf(vp, fp + 1, vn, fn)
   def plusvn = MatConf(vp, fp, vn + 1, fn)
   def plusfn = MatConf(vp, fp, vn, fn + 1)
   def acuracia = (vp.toDouble + vn) / (vp + fp + vn + fn)
+}
+object Fold {
+  def apply(fold: Int, dataE: Data, pDiv: Double): Double = {
+    apply(fold, dataE.particiona(pDiv))
+  }
+  def apply(fold: Int, aux: => (Data, List[Exemplo])): Double = {
+    (1 to fold).foldLeft(0.0) { (soma, w) =>
+      val (data, exemplos) = aux
+      val mc = exemplos.foldLeft(MatConf(0, 0, 0, 0)) { (mc, exemplo) =>
+        val p = data.frequencias.probabilidadeDeOcorrer(exemplo)
+        (p, exemplo.classe) match {
+          case (p, 0) if (p < 0.5) => mc.plusvn
+          case (p, 0) if (p >= 0.5) => mc.plusfp
+          case (p, 1) if (p < 0.5) => mc.plusfn
+          case (p, 1) if (p >= 0.5) => mc.plusvp
+        }
+      }
+      soma + mc.acuracia
+    } / fold
+  }
 }
 case class Cromossomo(genes: List[Boolean]) {
   def cruza(c: Cromossomo) = {
@@ -120,26 +140,6 @@ object Genetico {
     }
   }
 }
-object Fold {
-  def apply(fold: Int, dataE: Data, pDiv: Double): Double = {
-    apply(fold, dataE.particiona(pDiv))
-  }
-  def apply(fold: Int, aux: => (Data, List[Exemplo])): Double = {
-    (1 to fold).foldLeft(0.0) { (soma, w) =>
-      val (data, exemplos) = aux
-      val mc = exemplos.foldLeft(MatConf(0, 0, 0, 0)) { (mc, exemplo) =>
-        val p = data.frequencias.probabilidadeDeOcorrer(exemplo)
-        (p, exemplo.classe) match {
-          case (p, 0) if (p < 0.5) => mc.plusvn
-          case (p, 0) if (p >= 0.5) => mc.plusfp
-          case (p, 1) if (p < 0.5) => mc.plusfn
-          case (p, 1) if (p >= 0.5) => mc.plusvp
-        }
-      }
-      soma + mc.acuracia
-    } / fold
-  }
-}
 object Ep extends App {
   val dataTennis = read("data/playtennis.data", "data/playtennis.names")
   val dataDiscrSpam = read("data/discretespambase.data", "data/spambase.names")
@@ -155,11 +155,8 @@ object Ep extends App {
   println(Fold(1, dataDiscrSpam, 2.0 / 3) + " de acurácia Base discretizada Spam hold out")
   println(Fold(10, dataDiscrSpam, 0.9) + " de acurácia Base discretizada Spam 10 fold cross validation")
 
-  println("Genético base discretizada")
+  println("Genético")
   Genetico(dataDiscrSpam)
-
-  println("Genético sem discretizar")
-  Genetico(dataSpam)
 
   def read(pathData: String, pathNames: String) = {
     val exemplos = Source.fromFile(new File(pathData)).getLines.map(Exemplo(_)).toList
