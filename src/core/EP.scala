@@ -29,7 +29,8 @@ case class Data(exemplos: List[Exemplo], classes: List[String], nomesAtributos: 
     (Data(t._1, classes, nomesAtributos), t._2)
   }
   def seleciona(c: Cromossomo): Data = {
-    Data(exemplos.zip(c.genes).filter(_._2).unzip._1, classes, nomesAtributos.zip(c.genes).filter(_._2).unzip._1)
+    val ex = exemplos.map(exemplo => new Exemplo(exemplo.atributos.zip(c.genes).filter(_._2).unzip._1, exemplo.classe))
+    Data(ex, classes, nomesAtributos.zip(c.genes).filter(_._2).unzip._1)
   }
   def calculaFrequencia(c0: List[Exemplo]) = {
     val l = ListBuffer[MMap[String, Int]]()
@@ -59,7 +60,7 @@ case class NaiveBayes(c0: List[MMap[String, Double]], c1: List[MMap[String, Doub
     val pre1 = pre(c1, fClasse1, exemplo)
     pre1 / (pre1 + pre(c0, fClasse0, exemplo))
   }
-  def pre(lista: List[MMap[String, Double]], f: Double, exemplo: Exemplo) = {
+  private def pre(lista: List[MMap[String, Double]], f: Double, exemplo: Exemplo) = {
     exemplo.atributos.foldLeft(1.0, 0) { (t, atributo) =>
       val (mult, i) = t
       val p = lista(i).get(atributo).getOrElse(lista(i).get("default").get)
@@ -113,7 +114,6 @@ object CromossomoNaoFalse {
   def apply(x: => Cromossomo): Cromossomo = {
     val a = x
     if (!a.genes.foldLeft(false)(_ || _)) {
-      System.err.println("1 up!")
       apply(x)
     } else a
   }
@@ -122,9 +122,13 @@ object Genetico {
   def apply(datae: Data) = {
     val (data, test) = datae.particiona(2.0 / 3)
     val cromossomos: Seq[(Cromossomo, Option[Data])] = (1 to 15).map(w => (CromossomoAleatorio(data.nomesAtributos.size), None))
-    (1 to 10).map { w =>
+    (1 to 10).par.map { w =>
       (1 to 40).foldLeft(cromossomos) { (cromossomos, i) =>
-        val datas = cromossomos.map(c => data.seleciona(c._1))
+        //println("w = %s, i = %s".format(w, i))
+        val datas = cromossomos.map { c =>
+          val a = data.seleciona(c._1)
+          a
+        }
         val mA = datas.zip(cromossomos).map { w =>
           val (cData, c) = w
           val d = cData.particiona(0.5)
@@ -134,7 +138,9 @@ object Genetico {
       }.head
     }.map { t =>
       val (cromossomo, trei) = t
-      (Fold(1, (trei.get, test)), cromossomo)
+      val ex = test.map(exemplo => new Exemplo(exemplo.atributos.zip(cromossomo.genes).filter(_._2).unzip._1, exemplo.classe))
+
+      (Fold(1, (trei.get, ex)), cromossomo)
     }.foreach { t =>
       println((t._1, data.seleciona(t._2).nomesAtributos))
     }
@@ -146,12 +152,10 @@ object Ep extends App {
   val dataSpam = read("data/spambase.data", "data/spambase.names")
 
   val str = " probabilidade de jogar tenis dado que: "
-  println(dataTennis.frequencias.probabilidadeDeOcorrer(Exemplo("1,2,1,1,0")) + str + "Sol, Quente, Alta, Forte")
+  println(dataTennis.frequencias.probabilidadeDeOcorrer(Exemplo("1,2,1,1,0")) + str + "Sol, Mediana, Alta, Forte")
   println(dataTennis.frequencias.probabilidadeDeOcorrer(Exemplo("2,2,2,2,1")) + str + "Nublado, Mediana, Normal, Fraco")
   println(dataTennis.frequencias.probabilidadeDeOcorrer(Exemplo("1,1,1,1,0")) + str + "Sol, Quente, Alta, Forte")
 
-  println(Fold(1, dataSpam, 2.0 / 3) + " de acurácia Base sem discretizar Spam hold out")
-  println(Fold(10, dataSpam, 0.9) + " de acurácia Base sem discretizar Spam 10 fold cross validation")
   println(Fold(1, dataDiscrSpam, 2.0 / 3) + " de acurácia Base discretizada Spam hold out")
   println(Fold(10, dataDiscrSpam, 0.9) + " de acurácia Base discretizada Spam 10 fold cross validation")
 
